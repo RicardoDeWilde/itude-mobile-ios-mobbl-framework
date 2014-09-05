@@ -26,6 +26,7 @@
 #import "MBTransitionStyle.h"
 #import "MBDialogController.h"
 #import "MBLocalizationService.h"
+#import <libkern/OSAtomic.h>
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -43,10 +44,11 @@
     // Private
 	NSInteger _activityIndicatorCount;
 	BOOL _temporary;
+    
+    volatile int32_t _needsRelease;
 }
 @property (nonatomic, assign) NSInteger activityIndicatorCount;
 @property (nonatomic, assign, readonly) dispatch_semaphore_t navigationSemaphore;
-@property (nonatomic, assign) BOOL needsRelease;
 
 @property (nonatomic, assign) BOOL markedForReset;
 
@@ -87,7 +89,7 @@
 		self.activityIndicatorCount = 0;
 		[self showActivityIndicator];
 		_navigationSemaphore = dispatch_semaphore_create(1);
-		self.needsRelease = false;
+		_needsRelease = 0;
 		self.markedForReset = true; 
         [[[MBViewBuilderFactory sharedInstance] styleHandler] styleNavigationBar:self.navigationController.navigationBar];
 	}
@@ -126,8 +128,7 @@
 	MBBasicViewController *viewController = (MBBasicViewController*)[page.viewController retain];
 
 	viewController.pageStackController = self;
-
-
+    
 	void (^actuallyShowPage)(void) =^{
 
 		// Apply transitionStyle for a regular page navigation
@@ -135,7 +136,6 @@
 		[style applyTransitionStyleToViewController:nav forMovement:MBTransitionMovementPush];
 
 		[viewController autorelease];
-		self.needsRelease = true;
 
 
 		if (self.markedForReset) {
@@ -152,6 +152,7 @@
 
 			// Regular navigation to new page
 			else {
+                
 				[nav pushViewController:viewController animated:[style animated]];
 			}
 		}
@@ -171,12 +172,17 @@
 	 */
 	if (!dispatch_semaphore_wait(self.navigationSemaphore, DISPATCH_TIME_NOW)) // dispatch_semaphore_wait returns 0 on success..
 	{
+		_needsRelease = true;
+
 		// yay, we immediately got the semaphore, so we can dispatch the showing of the page in the expected order
 		dispatch_async(dispatch_get_main_queue(), actuallyShowPage);
 	} else {
 		// we don't have the semaphore, so wait for it in a different queue
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 			dispatch_semaphore_wait(self.navigationSemaphore, DISPATCH_TIME_FOREVER);
+
+            _needsRelease = true;
+            
 			// yay, semaphore; dispatch actuallyShowPage
 			dispatch_async(dispatch_get_main_queue(), actuallyShowPage);
 		});
@@ -197,9 +203,8 @@
     }
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 		dispatch_semaphore_wait(self.navigationSemaphore, DISPATCH_TIME_FOREVER);
+        _needsRelease = true;
 		dispatch_async(dispatch_get_main_queue(), ^{
-			self.needsRelease = true;
-
 			[nav popViewControllerAnimated:animated];
 		});
 	});
@@ -232,8 +237,7 @@
 -(void) navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated{
 	_navigationController = viewController.navigationController;
     [self didActivate];
-	if (self.needsRelease) {
-		self.needsRelease = false;
+	if (OSAtomicCompareAndSwap32Barrier(1, 0, &_needsRelease)) {
 		dispatch_semaphore_signal(self.navigationSemaphore);
 	}
 }

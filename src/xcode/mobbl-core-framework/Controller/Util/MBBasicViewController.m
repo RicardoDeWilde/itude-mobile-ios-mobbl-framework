@@ -66,9 +66,8 @@
 	[super didMoveToParentViewController:parent];
 
 	if (!parent) {
-	for(id<MBOutcomeListenerProtocol> lsnr in self.outcomeListeners) {
-		[[MBApplicationController currentInstance].outcomeManager unregisterOutcomeListener:lsnr];
-	}
+        [self unregisterListenersWithOutcomeHandler];
+        
 	self.outcomeListeners = nil;
 }
 }
@@ -116,10 +115,8 @@
 -(void) viewWillAppear:(BOOL)animated {
 	// register all outcome listeners with the application controller; this view controller just became
 	// visible, so it is interested in outcomes
-	for(id<MBOutcomeListenerProtocol> lsnr in self.outcomeListeners) {
-		[[MBApplicationController currentInstance].outcomeManager registerOutcomeListener:lsnr];
-	}
-
+    [self registerListenersWithOutcomeHandler];
+    
 	for (id childView in [self.view subviews]){
 		if ([childView respondsToSelector:@selector(delegate)]) {
 			id delegate = [childView delegate];
@@ -144,10 +141,8 @@
 -(void) viewWillDisappear:(BOOL)animated {
 	// remove all outcome listeners from the application controller; this view controller
 	// is going to disappear, so it isn't interested in them anumore
-	for(id<MBOutcomeListenerProtocol> lsnr in self.outcomeListeners) {
-		[[MBApplicationController currentInstance].outcomeManager unregisterOutcomeListener:lsnr];
-	}
-
+    [self unregisterListenersWithOutcomeHandler];
+    
 	for (id childView in [self.view subviews]){
 		if ([childView respondsToSelector:@selector(delegate)]) {
 			id delegate = [childView delegate];
@@ -162,6 +157,11 @@
 #pragma mark Outcome listeners
 
 - (void) registerOutcomeListener:(id<MBOutcomeListenerProtocol>) listener {
+    if (listener == (id<MBOutcomeListenerProtocol>)self) {
+        NSLog (@"Don't register self as outcomeListener; this is done automatically!");
+        return;
+    }
+    
 	if(![self.outcomeListeners containsObject:listener]) {
 		[self.outcomeListeners addObject:listener];
 		[[MBApplicationController currentInstance].outcomeManager registerOutcomeListener:listener];
@@ -173,6 +173,25 @@
 	[self.outcomeListeners removeObject: listener];
 }
 
+
+
+- (void) registerListenersWithOutcomeHandler {
+    for(id<MBOutcomeListenerProtocol> lsnr in self.outcomeListeners) {
+		[[MBApplicationController currentInstance].outcomeManager registerOutcomeListener:lsnr];
+	}
+    
+    if ([self conformsToProtocol:@protocol(MBOutcomeListenerProtocol) ])
+        [[MBApplicationController currentInstance].outcomeManager registerOutcomeListener:(id<MBOutcomeListenerProtocol>)self];
+}
+
+- (void) unregisterListenersWithOutcomeHandler {
+    for(id<MBOutcomeListenerProtocol> lsnr in self.outcomeListeners) {
+		[[MBApplicationController currentInstance].outcomeManager unregisterOutcomeListener:lsnr];
+	}
+    
+    if ([self conformsToProtocol:@protocol(MBOutcomeListenerProtocol) ])
+        [[MBApplicationController currentInstance].outcomeManager unregisterOutcomeListener:(id<MBOutcomeListenerProtocol>)self];
+}
 
 
 

@@ -59,6 +59,11 @@
 {
     UITableViewCell *cell = [self buildCellForRow:panel forTableView:tableView];
     
+    
+    cell.selectionStyle = [self cellSelectionStyleForRow:panel];
+    cell.accessoryType = [self cellAccesoryTypeForRow:panel];
+
+    
     // Loop through the fields in the row to build the content of the cell
     for(MBComponent *child in [panel children]){
         if ([child isKindOfClass:[MBField class]]) {
@@ -76,9 +81,6 @@
         bounds.size.width = tableView.frame.size.width;
         cell.bounds = bounds;
     }
-    
-    cell.selectionStyle = [self cellSelectionStyleForRow:panel];
-    cell.accessoryType = [self cellAccesoryTypeForRow:panel];
     
     return cell;
 }

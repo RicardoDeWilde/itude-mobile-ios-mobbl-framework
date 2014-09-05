@@ -55,7 +55,7 @@
 	MBDocument *doc = [docDef createDocument];
 	
 	[self setSystemProperty:@"platform" value:@"iPhone" document:doc];
-    NSData *data = [[MBResourceService sharedInstance].fileManager dataWithContentsOfMainBundle:@"applicationproperties"];
+    NSData *data = [[MBResourceService sharedInstance].fileManager dataWithContentsOfMainBundle:@"applicationproperties.xml"];
 	
 	[MBXmlDocumentParser parseFragment:data intoDocument:doc rootPath:@"/Application[0]" copyRootAttributes: FALSE];
 	[_dictionary setValue:doc forKey:DOC_SYSTEM_PROPERTIES];

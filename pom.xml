@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.itude.mobile.ios.mobbl</groupId>
 	<artifactId>mobbl-core-framework</artifactId>
-	<version>0.0.2.10-SNAPSHOT</version>
+	<version>0.0.2.16-SNAPSHOT</version>
 	<packaging>xcode-framework</packaging>
 	<name>iOS Mobbl Core Framework</name>
 	<description>iOS Mobbl Core Framework</description>
@@ -62,14 +62,15 @@
 		<url>https://github.com/ItudeMobile/itude-mobile-ios-mobbl-framework</url>
 		<connection>scm:git:git://github.com/ItudeMobile/itude-mobile-ios-mobbl-framework.git</connection>
 		<developerConnection>scm:git:git@github.com:ItudeMobile/itude-mobile-ios-mobbl-framework.git</developerConnection>
-	</scm>
+	  <tag>HEAD</tag>
+  </scm>
 	
 	<build>
 	    <plugins>
 	    	<plugin>
 	        	<groupId>com.sap.prd.mobile.ios.mios</groupId>
 		        <artifactId>xcode-maven-plugin</artifactId>
-		        <version>1.13.0</version>
+		        <version>1.13.1-SNAPSHOT</version>
 	    	    <extensions>true</extensions>
 	 	    </plugin>
 	 	</plugins>
@@ -86,6 +87,13 @@
 			<url>http://mobbl.org/maven-repository/releases</url>
 		</repository>
 	</repositories>
+	<pluginRepositories>
+        <pluginRepository>
+	        <id>itudemobile-github-repository</id>
+			<name>ItudeMobile Github repository</name>
+			<url>http://mobbl.org/maven-repository/snapshots</url>
+		 </pluginRepository>
+    </pluginRepositories>
 	  
 </project>
 

@@ -36,31 +36,35 @@
 }
 
 - (NSString*) getPathToExistingFile:(NSString*) name {
-	NSString *fileName = [NSString stringWithFormat:@"%@.xml", name];
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentsDirectory = [paths objectAtIndex:0];
+	NSArray * const paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	NSString * const documentsDirectory = paths[0];
 	
-	// Check for .xml file in documents directory
-	NSString *absPath = [documentsDirectory stringByAppendingPathComponent: fileName];
-	BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:absPath];
-	if(fileExists) return absPath;
-	else {
+	NSString * const absoluteFilePath = [documentsDirectory stringByAppendingPathComponent: name];
+	const BOOL fileExistsInDocumentDirectory = [[NSFileManager defaultManager] fileExistsAtPath:absoluteFilePath];
+    
+	if (fileExistsInDocumentDirectory) {
+        return absoluteFilePath;
+    } else {
 		// check for .xml file in bundle
-		NSString *absPathInBundle = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: fileName];
-		fileExists = [[NSFileManager defaultManager] fileExistsAtPath:absPathInBundle];
-		if (fileExists) {
-			return absPathInBundle;
+        NSBundle * const appBundle = [NSBundle bundleForClass:[self class]];
+		NSString * const absoluteFilePathInBundle = [[appBundle bundlePath] stringByAppendingPathComponent: name];
+		const BOOL fileExistsInBundle = [[NSFileManager defaultManager] fileExistsAtPath:absoluteFilePathInBundle];
+        
+		if (fileExistsInBundle) {
+			return absoluteFilePathInBundle;
 		}
 	}
-	return [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: fileName];
+    
+	return [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: name];
 }
 
 -(NSString*) determineFileName:(NSString*) name {
-	NSString *fileName = [NSString stringWithFormat:@"%@.xml", name];
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentsDirectory = [paths objectAtIndex:0];
-	NSString *absPath = [documentsDirectory stringByAppendingPathComponent: fileName];
-    return absPath;
+	NSString *documentsDirectory = paths[0];
+    
+	NSString *absoluteFilePath = [documentsDirectory stringByAppendingPathComponent: name];
+    
+    return absoluteFilePath;
 }
 
 -(void) writeContents:(NSString*) contentString toFileName:(NSString*) fileName{

@@ -39,7 +39,7 @@ static MBResourceService *_instance = nil;
 	@synchronized(self) {
 		if(_instance == nil) {
 			_instance = [[self alloc] init];
-            _instance.fileManager  = [[MBFileManager alloc] init];
+            _instance.fileManager  = [[[MBFileManager alloc] init] autorelease];
             _instance.config = nil;
         }
 	}
