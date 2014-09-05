@@ -60,11 +60,13 @@
 - (void)createAllDialogControllers {
     NSArray *dialogDefinitions = [[MBMetadataService sharedInstance] dialogDefinitions];
     for (MBDialogDefinition *dialogDefinition in dialogDefinitions) {
-        MBDialogController *dialogController = [[MBApplicationFactory sharedInstance] createDialogController:dialogDefinition];
-        [self.dialogControllers setObject:dialogController forKey:dialogController.name];
-        for (MBPageStackController *stack in dialogController.pageStackControllers) {
-            [self.pageStackControllers setObject:stack forKey:stack.name];
-        }
+		if ([dialogDefinition isPreConditionValid]) {
+			MBDialogController *dialogController = [[MBApplicationFactory sharedInstance] createDialogController:dialogDefinition];
+			[self.dialogControllers setObject:dialogController forKey:dialogController.name];
+			for (MBPageStackController *stack in dialogController.pageStackControllers) {
+				[self.pageStackControllers setObject:stack forKey:stack.name];
+			}
+		}
     }
     
     [self.delegate didLoadDialogControllers:[self.dialogControllers allValues]];

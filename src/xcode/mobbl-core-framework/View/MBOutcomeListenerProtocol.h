@@ -20,6 +20,7 @@
 @protocol MBOutcomeListenerProtocol <NSObject>
 
 @optional
+- (BOOL) shouldHandleOutcome:(MBOutcome*) outcome;
 - (void) outcomeProduced:(MBOutcome*) outcome;
 - (void) outcomeHandled:(MBOutcome*) outcome;
 

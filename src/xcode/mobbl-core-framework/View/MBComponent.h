@@ -19,7 +19,6 @@
 #import "MBValueChangeListenerProtocol.h"
 #import "MBTypes.h"
 
-@class MBViewController;
 @class MBPage;
 @class MBComponentContainer;
 @class MBDocument;

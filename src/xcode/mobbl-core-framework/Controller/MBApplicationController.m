@@ -88,7 +88,8 @@ static MBApplicationController *_instance = nil;
 	
     _alertController = [[MBAlertController alloc] init];
     self.applicationFactory = applicationFactory;
-	_viewManager = [[MBViewManager alloc] init];
+    if (!_viewManager)
+        _viewManager = [[MBViewManager alloc] init];
 
 	// Added for optimization: Make sure the stringUtilitiesHelper is created. The createInstance methods instantiate variables that only need to be gathered once in the application lifecycle
 	[StringUtilitiesHelper createInstance]; // Added for optimization

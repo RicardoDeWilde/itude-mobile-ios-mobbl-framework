@@ -21,8 +21,8 @@
 #import "MBResourceService.h"
 
 
-#define C_CONFIGURATION_CONFIG_NAME @"config"
-#define C_CONFIGURATION_ENDPOINTS_NAME @"endpoints"
+#define C_CONFIGURATION_CONFIG_NAME @"config.xml"
+#define C_CONFIGURATION_ENDPOINTS_NAME @"endpoints.xml"
 
 
 static MBMetadataService *_instance = nil;

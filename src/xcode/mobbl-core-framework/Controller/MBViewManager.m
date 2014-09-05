@@ -49,6 +49,8 @@
 #import "MBEmptyContentViewWrapper.h"
 #import "MBSlidingMenuContentViewWrapper.h"
 
+#import "UIView+TreeWalker.h"
+
 #import <objc/runtime.h>
 #import <objc/message.h>
 
@@ -62,6 +64,8 @@
     
     NSMutableDictionary *_activityIndicatorCounts;
 	int _activityIndicatorCount;
+    
+
 }
 
 @property (nonatomic, retain) NSMutableDictionary *activityIndicatorCounts;
@@ -439,11 +443,13 @@
 			_activityIndicatorCount--;
 			
 			if(_activityIndicatorCount == 0) {
-				for (UIView *subview in [[topMostVisibleViewController view] subviews]) {
-					if ([subview isKindOfClass:[MBActivityIndicator class]]) {
-						[subview removeFromSuperview];
-					}
-				}
+                
+                for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
+                    UIViewController *rootViewController = window.rootViewController;
+                    for (UIView *view in [rootViewController.view subviewsOfClass:[MBActivityIndicator class] ]) {
+                        [view removeFromSuperview];
+                    }
+                }
 			}
 		}
 	});

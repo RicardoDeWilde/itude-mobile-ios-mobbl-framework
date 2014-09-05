@@ -74,7 +74,9 @@
 	THREAD_DUMP("handleOutcome")
 
 	@try {
-		[self doHandleOutcome: outcome];
+        if ([self shouldHandleOutcome:outcome]) {
+            [self doHandleOutcome: outcome];
+        }
 	}
 	@catch (NSException *e) {
 		[[MBApplicationController currentInstance] handleException: e outcome: outcome];
@@ -87,6 +89,20 @@ void runOnMain(void (^block)(void)) {
 	if ([NSThread isMainThread])
 		block ();
 	else dispatch_sync(dispatch_get_main_queue(), block);
+}
+
+- (BOOL)shouldHandleOutcome:(MBOutcome *)outcome {
+    // Ask all outcome listeners if the outcome should be handled
+    for(id<MBOutcomeListenerProtocol> lsnr in self.outcomeListeners) {
+        if ([lsnr respondsToSelector:@selector(shouldHandleOutcome:)]) {
+            BOOL shouldHandleOutcome = [lsnr shouldHandleOutcome:outcome];
+            if (!shouldHandleOutcome) {
+                return FALSE;
+            }
+        }
+    }
+    
+    return TRUE;
 }
 
 - (void) doHandleOutcome:(MBOutcome *)outcome {

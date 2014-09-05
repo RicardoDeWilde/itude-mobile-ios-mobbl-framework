@@ -166,7 +166,15 @@
 }
 
 -(UIView*) buildViewWithMaxBounds:(CGRect) bounds forParent:(UIView*) parent  viewState:(MBViewState) viewState {
-	return [[[MBViewBuilderFactory sharedInstance] pageViewBuilder] buildPageView: self withMaxBounds: bounds viewState: viewState];
+    if ([self.viewController isViewLoaded])
+    {
+        [[[MBViewBuilderFactory sharedInstance] pageViewBuilder] rebuildPageView: self currentView:self.viewController.view withMaxBounds: bounds viewState: viewState];
+        return self.viewController.view;
+    }
+    else
+    {
+        return [[[MBViewBuilderFactory sharedInstance] pageViewBuilder] buildPageView: self withMaxBounds: bounds viewState: viewState];
+    }
 }
 
 -(void) handleException:(NSException *)exception {

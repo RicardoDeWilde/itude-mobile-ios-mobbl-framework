@@ -24,7 +24,18 @@
 
 -(UIView*) buildPageView:(MBPage*) page withMaxBounds:(CGRect) maxBounds viewState:(MBViewState) viewState {
 	UIView *view = [[[UIView alloc] initWithFrame: maxBounds] autorelease];  
-	view.backgroundColor = [UIColor groupTableViewBackgroundColor];  
+
+    [self rebuildPageView:page currentView:view withMaxBounds:maxBounds viewState:viewState];
+    
+	return view;	
+}
+
+-(void)rebuildPageView:(MBPage *)page currentView:(UIView *)view withMaxBounds:(CGRect)maxBounds viewState:(MBViewState)viewState {
+    // create a copy to make sure iterator doesn't break
+    for (UIView *child in [view.subviews.copy autorelease])
+        child.removeFromSuperview;
+    
+    view.backgroundColor = [UIColor groupTableViewBackgroundColor];
 	
 	[page setupKeyboardHiding: view];
 	
@@ -33,10 +44,10 @@
 	   horizontalLayout: FALSE
 				 bounds: maxBounds
 			  viewState: viewState];
-
+    
 	[[self styleHandler] applyStyle:page forView:view viewState: viewState];
 
-	return view;	
+    
 }
 
 @end

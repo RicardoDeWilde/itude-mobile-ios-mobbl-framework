@@ -17,6 +17,10 @@
 #import "MBDocument.h"
 #import "MBDataHandler.h"
 
+
+@class MBDocumentOperation;
+
+
 /** Protocol for loading and storing MBDocument instances.
  */
 @protocol MBDataHandler
@@ -44,5 +48,11 @@
 /// @name Storing a document
 /** Stores the given document. */
 - (void) storeDocument:(MBDocument *)document;
+
+
+- (MBDocumentOperation*) createDocumentLoadOperation:(id<MBDataHandler>) dataHandler documentName:(NSString*) documentName arguments:(MBDocument*) arguments;
+
+- (MBDocumentOperation*) createDocumentStoreOperation:(id<MBDataHandler>) dataHandler document:(MBDocument*) document;
+
 
 @end

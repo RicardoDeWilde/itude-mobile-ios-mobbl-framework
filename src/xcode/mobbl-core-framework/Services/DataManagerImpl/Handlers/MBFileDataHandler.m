@@ -25,7 +25,8 @@
 - (MBDocument *) loadDocument:(NSString *)documentName {
 	DLog(@"Load %@", documentName);
 	MBDocumentDefinition *docDef = [[MBMetadataService sharedInstance] definitionForDocumentName: documentName];
-	NSData *data = [[MBResourceService sharedInstance].fileManager dataWithContentsOfMainBundle: documentName];
+    NSString *xmlFileName = [documentName stringByAppendingString:@".xml"];
+	NSData *data = [[MBResourceService sharedInstance].fileManager dataWithContentsOfMainBundle: xmlFileName];
 	if(data == nil || [data length] < 1) return nil;
 	else return [[MBDocumentFactory sharedInstance] documentWithData: data withType: PARSER_XML andDefinition:docDef];
 }
@@ -39,7 +40,8 @@
     
 	if(document != nil) {
 		NSString *xml = [document asXmlWithLevel:0];
-        [[MBResourceService sharedInstance].fileManager writeContents: xml toFileName:[document name]];
+        NSString *xmlFileName = [[document name] stringByAppendingString:@".xml"];
+        [[MBResourceService sharedInstance].fileManager writeContents: xml toFileName:xmlFileName];
 	}
     else{
         WLog(@"Null Document!! Cannot store");

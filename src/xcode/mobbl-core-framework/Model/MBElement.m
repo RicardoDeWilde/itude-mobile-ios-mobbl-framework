@@ -187,8 +187,8 @@
 
 -(NSString*) attributeAsXml:(NSString*)name withValue:(id) attrValue {
 	
-	attrValue = [self cookValue: attrValue];
-	return attrValue == nil?@"": [NSString stringWithFormat:@" %@='%@'", name, attrValue];
+	NSString *escaped = [attrValue xmlSimpleEscape];
+	return attrValue == nil?@"": [NSString stringWithFormat:@" %@='%@'", name, escaped];
 }
 
 - (NSString *) bodyText {

@@ -17,7 +17,7 @@
 #import "MBResourceConfiguration.h"
 #import "MBFileManager.h"
 
-#define RESOURCE_CONFIG_FILE_NAME @"resources"
+#define RESOURCE_CONFIG_FILE_NAME @"resources.xml"
 /** Service for accessing resources over the network or on the file system.
  *
  * retrieves images or files and caches them
